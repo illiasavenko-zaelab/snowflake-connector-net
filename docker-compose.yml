@@ -1,0 +1,19 @@
+services:
+  mock:
+    build:
+      context: .
+      dockerfile: MockSnowflake/Dockerfile
+
+  # The client gets the limits of a small container: half a CPU and 1 GiB.
+  repro:
+    build:
+      context: .
+      dockerfile: PoolExpiryRepro/Dockerfile
+      args:
+        SNOWFLAKE_DATA_VERSION: ${SNOWFLAKE_DATA_VERSION:-6.5.0}
+    depends_on:
+      - mock
+    environment:
+      MOCK_SNOWFLAKE_URL: http://mock:8088
+    cpus: 0.5
+    mem_limit: 1g
